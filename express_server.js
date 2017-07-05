@@ -1,14 +1,16 @@
 
-var express = require("express");
-var app = express();
-var PORT = process.env.PORT || 8080;
-app.set("view engine", "ejs")
+const express = require("express");
+const app = express();
+const PORT = process.env.PORT || 8080;
+const cookieParser = require('cookie-parser')
 const bodyParser = require("body-parser");
-app.use(bodyParser.urlencoded({extended: true}));
-var cookieParser = require('cookie-parser')
-app.use(cookieParser())
+app.set("view engine", "ejs")
 
-var urlDatabase = {
+app.use(bodyParser.urlencoded({extended: true}));
+
+app.use(cookieParser());
+
+const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
   "9sm5xK": "http://www.google.com"
 };
@@ -35,12 +37,19 @@ app.get("/urls/:id", (req, res) => {
 
 
 app.post("/urls", (req, res) => {
-  let longURL = req.body.longURL;  // debug statement to see POST parameters
+  let longURL = req.body.longURL;
   let shortURL = generateRandomString();
   urlDatabase[shortURL] = longURL;
   console.log(urlDatabase[shortURL]);
 
-  res.redirect("/urls/"+ shortURL);         // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls/"+ shortURL);
+});
+
+app.post("/login", (req, res) =>{
+  let name = req.body.username;
+  console.log(name);
+  res.cookie("username", name);
+  res.redirect("/urls");
 });
 
 function generateRandomString() {
