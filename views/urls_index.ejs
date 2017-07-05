@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TinyApp</title>
+  </head>
+
+  <body>
+    <ul>
+      <% for(var i in urls) { %>
+      <form method="POST" action="/urls/<%= i %>/delete">
+          <li><%= i + " : " %><a href ="/urls/<%=i %>"><%= urls[i] %></a></li>
+
+        <input id="<%= i %>" type="submit" value="Delete">
+      </form>
+      <% } %>
+    </ul>
+  </body>
+</html>
