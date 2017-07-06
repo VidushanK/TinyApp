@@ -5,6 +5,9 @@
   </head>
 
   <body>
+
+<h4><%= username %></h4>
+<% include partials/_header %>
     <ul>
       <% for(var i in urls) { %>
       <form method="POST" action="/urls/<%= i %>/delete">
