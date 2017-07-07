@@ -2,15 +2,17 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+  <% include partials/_header %>
   </head>
 
   <body>
 
-<h1><%= username %></h1>
- <% include partials/_header %>
+
+
+
   <ul>
 
-      <li> <%=shortURL%> <%=fullURL%></li>
+      <li> <%=shortURL%> : <%= longURL%></li>
   </ul>
 
 
