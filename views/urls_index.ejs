@@ -2,19 +2,19 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+    <% include partials/_header %>
   </head>
-
   <body>
-
-<h4><%= username %></h4>
-<% include partials/_header %>
     <ul>
       <% for(var i in urls) { %>
+         <li><%= i + " : " %><a href ="/urls/<%=i %>"><%= urls[i] %></a>
+      <form action='/urls/<%= i %>'>
+            <input type='submit' value='Edit'>
+      </form>
       <form method="POST" action="/urls/<%= i %>/delete">
-          <li><%= i + " : " %><a href ="/urls/<%=i %>"><%= urls[i] %></a></li>
-
         <input id="<%= i %>" type="submit" value="Delete">
       </form>
+      </li>
       <% } %>
     </ul>
   </body>
