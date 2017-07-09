@@ -2,20 +2,16 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
-    <% include partials/_header %>
   </head>
   <body>
-    <ul>
-      <% for(var i in urls) { %>
-         <li><%= i + " : " %><a href ="/urls/<%=i %>"><%= urls[i].longURL %></a>
-      <form action='/urls/<%= i %>'>
-            <input type='submit' value='Edit'>
-      </form>
-      <form method="POST" action="/urls/<%= i %>/delete">
-        <input id="<%= i %>" type="submit" value="Delete">
-      </form>
-      </li>
-      <% } %>
-    </ul>
+      <!-- Add your EJS code here -->
+      <header><% include ./partials/_header %></header>
+      <ul>
+        <% for (var shortUrl in urls) { %>
+        <li><%= shortUrl %>: <a href><%= urls[shortUrl].longURL %></a></li>
+        <a href = "/urls/<%= shortUrl %>">Edit</a>
+        <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
+        <% }; %>
+      </ul>
   </body>
 </html>
