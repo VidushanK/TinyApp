@@ -45,12 +45,14 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = {
-  username: users[req.cookies['user_id']],
-  urls: urlDatabase
-  };
-  res.render("urls_index", templateVars);
+    let templateVars = {
+      username: users[req.cookies['user_id']],
+      urlDatabase: urlsForUser(req.cookies["user_id"]),
+      longURL : req.body.longURL
+    }
+    res.render("urls_index", templateVars);
 });
+
 
 app.get("/urls/new" , (req, res) => {
   let templateVars = {
@@ -83,17 +85,19 @@ app.get('/login', (req, res) => {
  // app post
 
 app.post("/urls", (req, res) => {
-  if (users.hasOwnProperty(req.cookies['user_id'])) {
-    let userID = generateRandomString();
-    urlDatabase[userID] = {
-      longURL: req.body.longURL,
+  var urlInDB = urlDatabase[req.params.id];
+  var trueOwner = urlInDB.user_id;
+  if (req.cookies['user_id'] === trueOwner) {
+    let templateVars = {
+      username: users[req.cookies['user_id']],
+      urlDatabase: urlsForUser(req.cookies["user_id"]),
+      longURL : req.body.longURL,
       user_id: req.cookies['user_id']
-    },
-    res.redirect('/urls');
-  } else {
-    res.status(403).send('login/register to create a url')
+    };
+    res.redirect("/urls");
   }
 });
+
 
 app.post("/urls/:id", (req, res) => {
   var urlInDB = urlDatabase[req.params.id];
@@ -102,10 +106,8 @@ app.post("/urls/:id", (req, res) => {
   } else {
       var trueOwner = urlInDB.user_id;
       if (req.cookies['user_id'] === trueOwner) {
-        let newUrl = req.params.id;
-        urlDatabase[newUrl] = {
-          longURL : req.body.longURL
-        }
+        var editURL = req.body.longURL;
+        editURL = urlDatabase[req.params.id].longURL;
         res.redirect("/urls");
         return;
     } else {
@@ -141,8 +143,15 @@ function checkEmail(email) {
   return false;
 }
 
-function checkUser(id){
-  return !!users[id]
+
+function urlsForUser(id) {
+  let links = {};
+  for (var i in urlDatabase) {
+    if ( id === urlDatabase[i].user_id) {
+      links[i] = urlDatabase[i];
+    }
+  }
+  return links;
 }
 
 app.post('/register', (req, res) => {

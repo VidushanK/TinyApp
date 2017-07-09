@@ -7,8 +7,8 @@
       <!-- Add your EJS code here -->
       <header><% include ./partials/_header %></header>
       <ul>
-        <% for (var shortUrl in urls) { %>
-        <li><%= shortUrl %>: <a href><%= urls[shortUrl].longURL %></a></li>
+        <% for (var shortUrl in urlDatabase) { %>
+        <li><%= shortUrl %>: <a href><%= urlDatabase[shortUrl].longURL %></a></li>
         <a href = "/urls/<%= shortUrl %>">Edit</a>
         <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
         <% }; %>
