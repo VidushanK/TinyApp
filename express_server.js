@@ -96,11 +96,23 @@ app.post("/urls", (req, res) => {
 });
 
 app.post("/urls/:id", (req, res) => {
-  let newUrl = req.params.id;
-  urlDatabase[newUrl] = {
-    longURL : req.body.longURL
-  };
-  res.redirect("/urls");
+  var urlInDB = urlDatabase[req.params.id];
+  if (!urlInDB) {
+    res.status(403).send('403: you must be logged on to edit!');
+  } else {
+      var trueOwner = urlInDB.user_id;
+      if (req.cookies['user_id'] === trueOwner) {
+        let newUrl = req.params.id;
+        urlDatabase[newUrl] = {
+          longURL : req.body.longURL
+        }
+        res.redirect("/urls");
+        return;
+    } else {
+      res.status(401).send('You do not have correct access');
+      return;;
+    }
+  }
 });
 
 app.post("/urls/:id/delete", (req, res) => {
