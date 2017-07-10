@@ -5,20 +5,19 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 var cookieSession = require('cookie-session')
 
-
 app.set("view engine", "ejs")
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
+
 app.use(cookieSession({
   name: 'session',
   key: ['key1', 'key2 '],
-  secret: 'first secret',
-  // Cookie Options
+  secret: 'secret keys',
   maxAge: 24 * 60 * 60 * 1000 // 24 hours
 }));
-function generateRandomString() {
-  return Math.random().toString(32).substr(2, 6);
-}
 
+// database of users
 let urlDatabase = {
   "b2xVn2": {
     longURL: "http://www.lighthouselabs.ca",
@@ -29,7 +28,7 @@ let urlDatabase = {
     user_id: 'user2RandomID'
   }
 };
-
+// contains users infomation
 const users = {
   "userRandomID": {
     id: "userRandomID",
@@ -42,8 +41,12 @@ const users = {
     password: bcrypt.hashSync('password', 10)
   }
 }
-// check functions
+// generate a new string of 6 characters
+function generateRandomString() {
+  return Math.random().toString(32).substr(2, 6);
+}
 
+// function checks users email
 function checkEmail(email) {
   for (let id in users) {
     if (email === users[id].email)
@@ -52,7 +55,7 @@ function checkEmail(email) {
   return false;
 }
 
-
+// function checks users urls
 function urlsForUser(id) {
   let links = {};
   for (var i in urlDatabase) {
@@ -63,8 +66,7 @@ function urlsForUser(id) {
   return links;
 }
 
-
-// app GET
+// app GET method
 
 app.get("/register", (req, res) => {
   res.render("urls_registration");
@@ -72,18 +74,18 @@ app.get("/register", (req, res) => {
 
 app.get("/urls", (req, res) => {
   let templateVars = {
-      username: users[req.session.user_id],
-      urlDatabase: urlsForUser(req.session.user_id),
-      longURL : req.body.longURL
-    }
-    res.render("urls_index", templateVars);
+    username: users[req.session.user_id],
+    urlDatabase: urlsForUser(req.session.user_id),
+    longURL : req.body.longURL
+  }
+  res.render("urls_index", templateVars);
 });
 
 app.get('/urls/new', (req, res) => {
  let templateVars = {
-      username: users[req.session.user_id],
-      longURL : req.body.longURL
-    };
+    username: users[req.session.user_id],
+    longURL : req.body.longURL
+  };
   if(req.session.user_id) {
     res.render("urls_new", templateVars);
   } else {
@@ -111,7 +113,7 @@ app.get('/login', (req, res) => {
    res.render('urls_login');
 });
 
- // app POST
+ // app POST method
 
 app.post("/urls", (req, res) => {
  if (users.hasOwnProperty([req.session.user_id])) {
