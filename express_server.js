@@ -1,14 +1,20 @@
-
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
-const cookieParser = require('cookie-parser');
 const bodyParser = require("body-parser");
+const bcrypt = require('bcrypt');
+var cookieSession = require('cookie-session')
+
 
 app.set("view engine", "ejs")
 app.use(bodyParser.urlencoded({extended: true}));
-app.use(cookieParser());
-
+app.use(cookieSession({
+  name: 'session',
+  key: ['key1', 'key2 '],
+  secret: 'first secret',
+  // Cookie Options
+  maxAge: 24 * 60 * 60 * 1000 // 24 hours
+}));
 function generateRandomString() {
   return Math.random().toString(32).substr(2, 6);
 }
@@ -28,111 +34,14 @@ const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: bcrypt.hashSync('password', 10)
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: bcrypt.hashSync('password', 10)
   }
 }
-
-
-// app get
-
-app.get("/register", (req, res) => {
-  res.render("urls_registration");
-});
-
-app.get("/urls", (req, res) => {
-    let templateVars = {
-      username: users[req.cookies['user_id']],
-      urlDatabase: urlsForUser(req.cookies["user_id"]),
-      longURL : req.body.longURL
-    }
-    res.render("urls_index", templateVars);
-});
-
-
-app.get("/urls/new" , (req, res) => {
-  let templateVars = {
-    username: users[req.cookies['user_id']]
-  }
-  res.render("urls_new", templateVars);
-});
-
-
-app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    username: users[req.cookies['user_id']],
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL
-  };
-  console.log(templateVars)
-  res.render("urls_show", templateVars);
-});
-
-app.get("/u/:shortURL", (req, res) => {
-  let longURL = urlDatabase[req.params.shortURL].longURL;
-  console.log(longURL);
-  res.redirect(longURL);
-});
-
-app.get('/login', (req, res) => {
-   res.render('urls_login');
-});
-
- // app post
-
-app.post("/urls", (req, res) => {
-  var urlInDB = urlDatabase[req.params.id];
-  var trueOwner = urlInDB.user_id;
-  if (req.cookies['user_id'] === trueOwner) {
-    let templateVars = {
-      username: users[req.cookies['user_id']],
-      urlDatabase: urlsForUser(req.cookies["user_id"]),
-      longURL : req.body.longURL,
-      user_id: req.cookies['user_id']
-    };
-    res.redirect("/urls");
-  }
-});
-
-
-app.post("/urls/:id", (req, res) => {
-  var urlInDB = urlDatabase[req.params.id];
-  if (!urlInDB) {
-    res.status(403).send('403: you must be logged on to edit!');
-  } else {
-      var trueOwner = urlInDB.user_id;
-      if (req.cookies['user_id'] === trueOwner) {
-        var editURL = req.body.longURL;
-        editURL = urlDatabase[req.params.id].longURL;
-        res.redirect("/urls");
-        return;
-    } else {
-      res.status(401).send('You do not have correct access');
-      return;;
-    }
-  }
-});
-
-app.post("/urls/:id/delete", (req, res) => {
-  var urlInDB = urlDatabase[req.params.id];
-  if (!urlInDB) {
-    res.status(403).send('url does not exists');
-  } else {
-      var trueOwner = urlInDB.user_id;
-      if (req.cookies['user_id'] === trueOwner) {
-        delete urlDatabase[req.params.id];
-        res.redirect("/urls");
-      } else {
-        res.status(403).send('You do not have correct access');
-      }
-    }
-});
-
-
 // check functions
 
 function checkEmail(email) {
@@ -154,6 +63,93 @@ function urlsForUser(id) {
   return links;
 }
 
+
+// app GET
+
+app.get("/register", (req, res) => {
+  res.render("urls_registration");
+});
+
+app.get("/urls", (req, res) => {
+  let templateVars = {
+      username: users[req.session.user_id],
+      urlDatabase: urlsForUser(req.session.user_id),
+      longURL : req.body.longURL
+    }
+    res.render("urls_index", templateVars);
+});
+
+app.get('/urls/new', (req, res) => {
+ let templateVars = {
+      username: users[req.session.user_id],
+      longURL : req.body.longURL
+    };
+  if(req.session.user_id) {
+    res.render("urls_new", templateVars);
+  } else {
+    res.status(403).send('You do not have correct access');
+  }
+});
+
+app.get("/urls/:id", (req, res) => {
+  let templateVars = {
+     username: users[req.session.user_id],
+    shortURL: req.params.id,
+    longURL: urlDatabase[req.params.id].longURL
+  };
+  console.log(templateVars)
+  res.render("urls_show", templateVars);
+});
+
+app.get("/u/:shortURL", (req, res) => {
+  let longURL = urlDatabase[req.params.shortURL].longURL;
+  console.log(longURL);
+  res.redirect(longURL);
+});
+
+app.get('/login', (req, res) => {
+   res.render('urls_login');
+});
+
+ // app POST
+
+app.post("/urls", (req, res) => {
+ if (users.hasOwnProperty([req.session.user_id])) {
+     let userID = generateRandomString()
+     urlDatabase[userID] = {
+       longURL: req.body.longURL,
+       user_id: req.session.user_id
+     },
+     res.redirect('/urls')
+   } else {res.status(403).send('login/register to create a url')};
+});
+
+app.post("/urls/:id", (req, res) => {
+  var urlInDB = urlDatabase[req.params.id];
+  if (!urlInDB) {
+    res.status(403).send('403: you must be logged on to edit!');
+  } else {
+    var editURL = req.body.longURL;
+    urlDatabase[req.params.id].longURL = editURL;
+    res.redirect("/urls");
+  }
+});
+
+app.post("/urls/:id/delete", (req, res) => {
+  var urlInDB = urlDatabase[req.params.id];
+  if (!urlInDB) {
+    res.status(403).send('url does not exists');
+  } else {
+      var trueOwner = urlInDB.user_id;
+      if (req.session.user_id === trueOwner) {
+        delete urlDatabase[req.params.id];
+        res.redirect("/urls");
+      } else {
+        res.status(403).send('You do not have correct access');
+      }
+    }
+});
+
 app.post('/register', (req, res) => {
   let userID = generateRandomString();
   if (req.body.email === '' || req.body.password === '') {
@@ -164,9 +160,10 @@ app.post('/register', (req, res) => {
     users[userID] = {
       id: userID,
       email: req.body.email,
-      password: req.body.password
+      password: bcrypt.hashSync('password', 10)
     };
-    res.cookie('user_id', userID);
+
+    req.session.user["user_id"];
   };
   res.redirect('/urls')
 });
@@ -176,8 +173,8 @@ app.post('/login', (req, res) => {
     res.status(403).send('user with that e-mail cannot be found');
   } else {
     for (var user in users) {
-      if (users[user].email === req.body.email && users[user].password === req.body.password) {
-        res.cookie('user_id', user);
+      if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].password)) {
+        req.session.user_id = users[user].id;
         res.redirect('/urls');
       } else if (users[user].email === req.body.email && users[user].password !== req.body.password){
         res.status(403).send('user password do not match!');
@@ -187,7 +184,7 @@ app.post('/login', (req, res) => {
 });
 
 app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
+  req.session.user_id = null;
   res.redirect('/login');
 });
 

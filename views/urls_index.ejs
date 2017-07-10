@@ -5,11 +5,13 @@
   </head>
   <body>
       <!-- Add your EJS code here -->
-      <header><% include ./partials/_header %></header>
+      <header><% include partials/_header %></header>
       <ul>
         <% for (var shortUrl in urlDatabase) { %>
         <li><%= shortUrl %>: <a href><%= urlDatabase[shortUrl].longURL %></a></li>
-        <a href = "/urls/<%= shortUrl %>">Edit</a>
+        <form method="GET" action='/urls/<%= shortUrl %>'>
+          <button type="submit">EDIT</button>
+        </form>
         <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
         <% }; %>
       </ul>
