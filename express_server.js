@@ -4,12 +4,12 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 var cookieSession = require('cookie-session')
-
 app.set("view engine", "ejs")
+
+
 app.use(bodyParser.urlencoded({
   extended: true
 }));
-
 app.use(cookieSession({
   name: 'session',
   key: ['key1', 'key2 '],
@@ -68,10 +68,25 @@ function urlsForUser(id) {
 
 // app GET method
 
+// goes to registeration page
+app.get("/", (req, res) => {
+var urlInDB = users[req.session.user_id];
+  if (!urlInDB) {
+    res.redirect("/login");
+  } else {
+    res.redirect("/urls");
+  }
+});
 app.get("/register", (req, res) => {
   res.render("urls_registration");
 });
 
+// login page
+app.get('/login', (req, res) => {
+   res.render('urls_login');
+});
+
+// goes to url page
 app.get("/urls", (req, res) => {
   let templateVars = {
     username: users[req.session.user_id],
@@ -81,6 +96,7 @@ app.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 
+// new link page
 app.get('/urls/new', (req, res) => {
  let templateVars = {
     username: users[req.session.user_id],
@@ -93,9 +109,10 @@ app.get('/urls/new', (req, res) => {
   }
 });
 
+// page where you can edit your long URL
 app.get("/urls/:id", (req, res) => {
   let templateVars = {
-     username: users[req.session.user_id],
+    username: users[req.session.user_id],
     shortURL: req.params.id,
     longURL: urlDatabase[req.params.id].longURL
   };
@@ -103,18 +120,15 @@ app.get("/urls/:id", (req, res) => {
   res.render("urls_show", templateVars);
 });
 
+// redirects the shortURL to the actual longURL link
 app.get("/u/:shortURL", (req, res) => {
   let longURL = urlDatabase[req.params.shortURL].longURL;
   console.log(longURL);
   res.redirect(longURL);
 });
 
-app.get('/login', (req, res) => {
-   res.render('urls_login');
-});
-
  // app POST method
-
+// redirects to /url if you're logged in; else it would send a 403 status code
 app.post("/urls", (req, res) => {
  if (users.hasOwnProperty([req.session.user_id])) {
      let userID = generateRandomString()
@@ -126,6 +140,7 @@ app.post("/urls", (req, res) => {
    } else {res.status(403).send('login/register to create a url')};
 });
 
+// updates longurl and redirects to /url page
 app.post("/urls/:id", (req, res) => {
   var urlInDB = urlDatabase[req.params.id];
   if (!urlInDB) {
@@ -137,39 +152,47 @@ app.post("/urls/:id", (req, res) => {
   }
 });
 
+// the user who created the link, can delete their link;
 app.post("/urls/:id/delete", (req, res) => {
   var urlInDB = urlDatabase[req.params.id];
   if (!urlInDB) {
     res.status(403).send('url does not exists');
+    return;
   } else {
       var trueOwner = urlInDB.user_id;
       if (req.session.user_id === trueOwner) {
         delete urlDatabase[req.params.id];
         res.redirect("/urls");
+        return;
       } else {
         res.status(403).send('You do not have correct access');
+        return;
       }
     }
 });
 
+// if your email is not on the url database, you can register a new account
 app.post('/register', (req, res) => {
   let userID = generateRandomString();
   if (req.body.email === '' || req.body.password === '') {
     res.status(400).send('Email or password empty');
+    return;
   } else if (checkEmail(req.body.email)) {
     res.status(400).send('Email already in database')
+    return;
   } else {
     users[userID] = {
       id: userID,
       email: req.body.email,
       password: bcrypt.hashSync('password', 10)
     };
-
-    req.session.user["user_id"];
+    req.session.user_id = userID;
+    res.redirect('/urls')
+    return;
   };
-  res.redirect('/urls')
 });
 
+// you can login on your registered account
 app.post('/login', (req, res) => {
   if (!checkEmail(req.body.email)){
     res.status(403).send('user with that e-mail cannot be found');
@@ -185,12 +208,12 @@ app.post('/login', (req, res) => {
   }
 });
 
+// you can logout, and it will redirect you to /url page
 app.post('/logout', (req, res) => {
   req.session.user_id = null;
-  res.redirect('/login');
+  res.redirect('/urls');
 });
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
-

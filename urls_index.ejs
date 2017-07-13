@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>TinyApp</title>
+  </head>
+  <body>
+      <header><% include partials/_header %></header>
+      <ul>
+        <% for (var shortUrl in urlDatabase) { %>
+        <li><%= shortUrl %>: <a href><%= urlDatabase[shortUrl].longURL %></a></li>
+        <form method="GET" action='/urls/new'>
+          <button type="submit">create a new link!</button>
+        </form>
+        <form method="GET" action='/urls/<%= shortUrl %>'>
+          <button type="submit">EDIT</button>
+        </form>
+        <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
+        <% }; %>
+      </ul>
+  </body>
+</html>
