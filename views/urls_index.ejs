@@ -8,14 +8,10 @@
       <ul>
         <% for (var shortUrl in urlDatabase) { %>
         <li><%= shortUrl %>: <a href><%= urlDatabase[shortUrl].longURL %></a></li>
-        <form method="GET" action='/urls/new'>
-          <button type="submit">create a new link!</button>
-        </form>
-        <form method="GET" action='/urls/<%= shortUrl %>'>
-          <button type="submit">EDIT</button>
-        </form>
+        <a href="/urls/<%= shortUrl %>"> <button> EDIT </button></a>
         <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
         <% }; %>
+        <a href="/urls/new"> <button> create a new link! </button></a><br>
       </ul>
   </body>
 </html>
