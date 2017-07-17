@@ -7,7 +7,8 @@
       <header><% include partials/_header %></header>
       <ul>
         <% for (var shortUrl in urlDatabase) { %>
-        <li><%= shortUrl %>: <a href><%= urlDatabase[shortUrl].longURL %></a></li>
+        <li><a href="/u/<%= shortUrl %>"><%= shortUrl %></a>: <%= urlDatabase[shortUrl].longURL %></li>
+
         <a href="/urls/<%= shortUrl %>"> <button> EDIT </button></a>
         <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
         <% }; %>
