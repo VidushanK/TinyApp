@@ -200,7 +200,7 @@ app.post('/register', (req, res) => {
 app.post('/login', (req, res) => {
   for (let user in users) {
     if (!checkEmail(req.body.email)){
-      res.status(403).send('user with that e-mail cannot be found');
+      res.status(401).send('user with that e-mail cannot be found');
     }
       if (checkEmail(req.body.email) && bcrypt.compareSync(req.body.password, users[user].password)) {
         req.session.user_id = users[user].id;
