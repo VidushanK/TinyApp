@@ -3,13 +3,12 @@ const app = express();
 const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
-var cookieSession = require('cookie-session')
+const cookieSession = require('cookie-session')
 app.set("view engine", "ejs")
 
 
-app.use(bodyParser.urlencoded({
-  extended: true
-}));
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.use(cookieSession({
   name: 'session',
   key: ['key1', 'key2 '],
@@ -58,7 +57,7 @@ function checkEmail(email) {
 // function checks users urls
 function urlsForUser(id) {
   let links = {};
-  for (var i in urlDatabase) {
+  for (let i in urlDatabase) {
     if ( id === urlDatabase[i].user_id) {
       links[i] = urlDatabase[i];
     }
@@ -70,7 +69,7 @@ function urlsForUser(id) {
 
 // goes to registeration page
 app.get("/", (req, res) => {
-var urlInDB = users[req.session.user_id];
+const urlInDB = users[req.session.user_id];
   if (!urlInDB) {
     res.redirect("/login");
   } else {
@@ -111,13 +110,18 @@ app.get('/urls/new', (req, res) => {
 
 // page where you can edit your long URL
 app.get("/urls/:id", (req, res) => {
-  let templateVars = {
-    username: users[req.session.user_id],
-    shortURL: req.params.id,
-    longURL: urlDatabase[req.params.id].longURL
-  };
-  console.log(templateVars)
-  res.render("urls_show", templateVars);
+  if (urlDatabase[req.params.id].user_id !== req.session.user_id) {
+   res.status(403).send('Error: 403: This is not your link! Please <a href="/"> Go Back </a>');
+   return;
+ } else {
+    let templateVars = {
+      username: users[req.session.user_id],
+      shortURL: req.params.id,
+      longURL: urlDatabase[req.params.id].longURL
+    };
+    console.log(templateVars)
+    res.render("urls_show", templateVars);
+  }
 });
 
 // redirects the shortURL to the actual longURL link
@@ -142,11 +146,11 @@ app.post("/urls", (req, res) => {
 
 // updates longurl and redirects to /url page
 app.post("/urls/:id", (req, res) => {
-  var urlInDB = urlDatabase[req.params.id];
+  const urlInDB = urlDatabase[req.params.id];
   if (!urlInDB) {
     res.status(403).send('403: you must be logged on to edit!');
   } else {
-    var editURL = req.body.longURL;
+    const editURL = req.body.longURL;
     urlDatabase[req.params.id].longURL = editURL;
     res.redirect("/urls");
   }
@@ -154,12 +158,12 @@ app.post("/urls/:id", (req, res) => {
 
 // the user who created the link, can delete their link;
 app.post("/urls/:id/delete", (req, res) => {
-  var urlInDB = urlDatabase[req.params.id];
+  const urlInDB = urlDatabase[req.params.id];
   if (!urlInDB) {
-    res.status(403).send('url does not exists');
+    res.status(404).send('url does not exists');
     return;
   } else {
-      var trueOwner = urlInDB.user_id;
+      const trueOwner = urlInDB.user_id;
       if (req.session.user_id === trueOwner) {
         delete urlDatabase[req.params.id];
         res.redirect("/urls");
@@ -184,28 +188,27 @@ app.post('/register', (req, res) => {
     users[userID] = {
       id: userID,
       email: req.body.email,
-      password: bcrypt.hashSync('password', 10)
+      password: bcrypt.hashSync(req.body.password, 10)
     };
     req.session.user_id = userID;
     res.redirect('/urls')
     return;
-  };
+  }
 });
 
 // you can login on your registered account
 app.post('/login', (req, res) => {
-  if (!checkEmail(req.body.email)){
-    res.status(403).send('user with that e-mail cannot be found');
-  } else {
-    for (var user in users) {
-      if (users[user].email === req.body.email && bcrypt.compareSync(req.body.password, users[user].password)) {
+  for (let user in users) {
+    if (!checkEmail(req.body.email)){
+      res.status(403).send('user with that e-mail cannot be found');
+    }
+      if (checkEmail(req.body.email) && bcrypt.compareSync(req.body.password, users[user].password)) {
         req.session.user_id = users[user].id;
         res.redirect('/urls');
-      } else if (users[user].email === req.body.email && users[user].password !== req.body.password){
-        res.status(403).send('user password do not match!');
+        return;
       }
     }
-  }
+    res.status(401).send('password do not match!');
 });
 
 // you can logout, and it will redirect you to /url page
