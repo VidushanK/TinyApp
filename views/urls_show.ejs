@@ -2,17 +2,26 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
+    <link rel="stylesheet" href="/css/homepage.css" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   <% include partials/_header %>
   </head>
   <body>
     <ul>
-        <li> <%=shortURL%> : <%= longURL%></li>
-    </ul>
-      <form action="/urls/<%= shortURL %>" method="POST" style="margin:150px;">
+      <div class="panel panel-info">
+        <li class="panel-heading"> <%=shortURL%> : <%= longURL%></li>
+
+
+      <form action="/urls/<%= shortURL %>" method="POST" >
       <label for="longULL"></label>
-      <input id="longURL" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px">
-      <input type="submit" value="Update">
+      <input id="longURL" type="text" name="longURL" placeholder="<%= longURL %>" style="width: 300px; margin-left:50px; margin-top:10px; margin-bottom:10px;">
+      <input class="btn btn-primary" type="submit" value="Update">
     </form>
     </form>
+    </ul>
+    </div>
   </body>
 </html>
