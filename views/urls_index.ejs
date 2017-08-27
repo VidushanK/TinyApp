@@ -2,17 +2,36 @@
 <html lang="en">
   <head>
     <title>TinyApp</title>
+    <link rel="icon" type="image/x-icon" href="../assets/images/favicon.ico">
+    <link rel="stylesheet" href="/css/homepage.css" type="text/css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
   </head>
   <body>
-      <header><% include partials/_header %></header>
+  <% include partials/_header %>
+  <div class="main">
+    <h3> Shorten, brand and optimize your links! </h3>
+  </div>
+  <div>
       <ul>
         <% for (var shortUrl in urlDatabase) { %>
-        <li><a href="/u/<%= shortUrl %>"><%= shortUrl %></a>: <%= urlDatabase[shortUrl].longURL %></li>
-
-        <a href="/urls/<%= shortUrl %>"> <button> EDIT </button></a>
-        <form method="POST" action="/urls/<%= shortUrl %>/delete"><input type = "submit" value = "Delete"></form>
-        <% }; %>
-        <a href="/urls/new"> <button> create a new link! </button></a><br>
+        <div class="panel panel-info">
+          <li class="panel-heading"><a  href="/u/<%= shortUrl %>"><%= shortUrl %></a>: <%= urlDatabase[shortUrl].longURL %></li>
+          <div class="Row">
+             <li class="Column">
+               <a href="/urls/<%= shortUrl %>"> <button class="btn btn-primary"> EDIT </button></a>
+             </li>
+             <li class="Column">
+               <form method="POST" action="/urls/<%= shortUrl %>/delete"><input class="btn btn-danger" type = "submit" value = "Delete"></form>
+             </li>
+               <% }; %>
+               <li class="Column">
+               <a href="/urls/new"> <button class="btn btn-primary"> create a new link! </button></a>
+             </li>
+           </div>
+       </div>
       </ul>
+  </div>
   </body>
 </html>

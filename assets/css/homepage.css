@@ -1,0 +1,33 @@
+.navbar-default .navbar-brand{
+  font-family: 'Helvetica';
+}
+.header-options{
+  float: right;
+  margin-top: 10px;
+}
+a.navbar-brand {
+  color: white !important;
+  font-size: 25px;
+}
+.Row
+{
+    display: table;
+    width: 250px; /*Optional*/
+    table-layout: fixed; /*Optional*/
+    border-spacing: 10px; /*Optional*/
+}
+.Column
+{
+    display: table-cell;
+
+}
+
+div.panel.panel-info{
+  width: 500px !important;
+  list-style: none !important;
+}
+
+.main{
+  text-align: center;
+  padding-bottom: 25px;
+}

@@ -4,7 +4,12 @@ const PORT = process.env.PORT || 8080;
 const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session')
-app.set("view engine", "ejs")
+
+app.use(express.static('assets'));
+app.engine('html', require('ejs').renderFile);
+
+app.set('views', __dirname + '/views');
+app.set('view engine', 'ejs');
 
 
 app.use(bodyParser.urlencoded({ extended: true }));

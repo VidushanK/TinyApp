@@ -1,13 +1,19 @@
 
-<header>
-  <% if (username) { %>
-    <h1>Current user: <%=username.email%> </h1>
 
-    <form action='/logout' method='POST'>
-      <input type='submit' value="Logout">
-    </form>
-  <% } else { %>
-    <a href="/login"> <button> login </button></a>
-    <a href="/register"> <button> register </button></a>
-  <% } %>
+<header>
+    <% if (username) { %>
+  <nav class="navbar navbar-inverse">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <a class="navbar-brand"><%=username.email%></a>
+      </div>
+      <form action='/logout' method='POST'>
+        <input class="header-options btn btn-primary" type='submit' value="Logout">
+      </form>
+    <% } else { %>
+      <a href="/login"> <button> login </button></a>
+      <a href="/register"> <button> register </button></a>
+    <% } %>
+    </div>
+  </nav>
 </header>
