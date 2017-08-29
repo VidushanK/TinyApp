@@ -7,7 +7,7 @@ TinyApp is a full stack web application built with node and Express that allows 
 ![Screen shot of login page](https://github.com/VidushanK/TinyApp/blob/master/docs/urls_login.png)
 ![Screen shot of register page](https://github.com/VidushanK/TinyApp/blob/master/docs/urls_register.png)
 ![Screen shot of show page](https://github.com/VidushanK/TinyApp/blob/master/docs/urls_show.png)
-![Screen shot of URL/new page](https://github.com/VidushanK/TinyApp/blob/master/docs/urls_new.png)
+
 
 ## Dependencies
 
@@ -18,7 +18,7 @@ TinyApp is a full stack web application built with node and Express that allows 
 - body-parser
 - cookie-session
 
-## Getting Started 
+## Getting Started
 
 - Install all dependencies (using the 'npm install' command)/
 - Run the development web server using the 'node express_server.js' command
