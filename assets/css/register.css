@@ -1,0 +1,11 @@
+body {
+	background: #eee !important;
+}
+
+form{
+  margin-top:50px;
+}
+
+div.form-group{
+  width:250px;
+}

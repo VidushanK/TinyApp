@@ -4,7 +4,7 @@
 <head>
   <title>TinyApp</title
     <link rel="icon" type="image/x-icon" href="/images/favicon.ico">
-    <link rel="stylesheet" href="/css/homepage.css" type="text/css" />
+    <link rel="stylesheet" href="/css/register.css" type="text/css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
@@ -13,13 +13,23 @@
 
 <body>
 
+  <center>
     <form method='POST' action="/register">
+    <div class="form-group">
+      <label for="email">Email address:</label>
       <input id="email" type="email" name="email" placeholder="Enter Your Email Address!">
-      <input id="password" type="password" name="password"  placeholder="Enter your password">
-      <input type="submit" value="Register">
-      <p>Already have an account?</p></form>
-      <a href="/login">Login here.</a>
+    </div>
+    <div class="form-group">
+      <label for="pwd">Password:</label></br>
+     <input id="password" type="password" name="password"  placeholder="Enter your password">
+    </div>
+    <div class="checkbox">
+      <label><input type="checkbox"> Remember me</label>
+    </div>
+    <button type="submit" class="btn btn-default">Submit</button>
+    <p>Already have an account?</p>
+    <a href="/login">Login here.</a>
     </form>
-
+  </center>
 </body>
   </html>

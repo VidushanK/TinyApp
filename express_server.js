@@ -1,3 +1,4 @@
+// dependencies
 const express = require("express");
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -5,15 +6,15 @@ const bodyParser = require("body-parser");
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session')
 
+// renders both html and ejs files
 app.use(express.static('assets'));
 app.engine('html', require('ejs').renderFile);
 
+// used for linking css into ejs file
 app.set('views', __dirname + '/views');
+
 app.set('view engine', 'ejs');
-
-
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.use(cookieSession({
   name: 'session',
   key: ['key1', 'key2 '],
